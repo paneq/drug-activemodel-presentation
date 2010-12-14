@@ -425,5 +425,35 @@ validations.rb
 	end
 
 
-!SLIDE
-translation.rb
+!SLIDE code smaller
+	@@@ ruby
+	# translation.rb
+	#
+	#   class TranslatedPerson
+	#     extend ActiveModel::Translation
+	#   end
+	#
+	#   TranslatedPerson.human_attribute_name('my_attribute')
+	#   # => "My attribute"
+	module Translation
+
+		# Returns the i18n_scope for the class. Overwrite if you want custom lookup.
+		def i18n_scope
+		  :activemodel
+		end
+
+		# When localizing a string, it goes through the lookup returned by this
+		# method, which is used in ActiveModel::Name#human,
+		# ActiveModel::Errors#full_messages and
+		# ActiveModel::Translation#human_attribute_name.
+		def lookup_ancestors
+		  self.ancestors.select { |x| x.respond_to?(:model_name) }
+		end
+
+		# Transforms attribute names into a more human format
+		#   Person.human_attribute_name("first_name") # => "First name"
+		def human_attribute_name(attribute, options = {})
+		end
+	end
+
+
