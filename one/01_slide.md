@@ -1,11 +1,19 @@
 !SLIDE title-slide
 # Active Model #
 
+!SLIDE bullets
+* http://robert.pankowecki.pl/
+* https://github.com/paneq/rails3-active_model-filter-example
+
 !SLIDE bullets incremental
 # Plan #
 
 * Przegląd wybranych funkcjonalności ActiveModel
 * Pokaz aplikacji
+
+!SLIDE code smaller
+
+# active_model/validator.rb
 
 !SLIDE code small
 
@@ -28,8 +36,9 @@
 	  end
 	end
 
-!SLIDE 
-Thread-safe ?
+!SLIDE code smaller
+# active_model/validator.rb
+# Thread-safe ?
 
 !SLIDE code smaller
 	@@@ ruby
@@ -121,12 +130,13 @@ Thread-safe ?
 		end
 	end
 
-!SLIDE
-Problem z BlockValidator gdy chcemy się dostać do opcji
+!SLIDE bullets small
+# Problem z BlockValidator
+* gdy chcemy się dostać do opcji
 
 
-!SLIDE
-validations.rb
+!SLIDE smaller
+# active_model/validations.rb
 
 !SLIDE code smaller
 	@@@ ruby
@@ -264,8 +274,9 @@ validations.rb
 	     end
 	   end
 
-!SLIDE
- errors.rb
+!SLIDE smaller
+# active_model/ errors.rb
+
 
 !SLIDE code smaller
 	# When passed a symbol or a name of a method, returns an array of errors
@@ -333,8 +344,9 @@ validations.rb
 	end
 
 
-!SLIDE
- naming.rb
+!SLIDE smaller
+# active_model/naming.rb
+
 
 !SLIDE code smaller
 	@@@ ruby
@@ -397,9 +409,11 @@ validations.rb
 		end
 	end
 
+!SLIDE smaller
+# active_model/conversion.rb
+
 !SLIDE code smaller
 	@@@ ruby
-	# conversion.rb
 	# Handles default conversions: to_model, to_key and to_param.
 	#
 	#   class ContactMessage
@@ -424,11 +438,11 @@ validations.rb
 		end
 	end
 
+!SLIDE smaller
+# active_model/translation.rb
 
 !SLIDE code smaller
 	@@@ ruby
-	# translation.rb
-	#
 	#   class TranslatedPerson
 	#     extend ActiveModel::Translation
 	#   end

@@ -1,6 +1,3 @@
-!SLIDE title-slide
-# Active Model #
-
 !SLIDE code smaller
 	@@@ ruby
 	# smart_model.rb
@@ -109,3 +106,48 @@
 		  render :index
 		end
 	end
+
+!SLIDE code smaller
+	@@@
+	<% content_for(:head) do %>
+	 <%= render :partial => 'shared/js/calendar_selector' %>
+	 <%= javascript_include_tag 'date_select_trio' %>
+	<% end %>
+
+	<%= semantic_form_for(@search, :url => search_cars_path) do |f| %>
+
+	<%= f.inputs do %>
+	 <%= f.input :color, :as => :check_boxes, :collection => Car.colors %>
+	 <%= f.input :brand, :as => :select, :collection => Car.brands %>
+	 <%= f.input :producent, :as => :select, :collection => Car.producents %>
+	 <%= f.date_select_trio %>
+	<% end %>
+
+	<%= f.buttons %>
+	<% end %>
+
+!SLIDE code smaller
+# Trzymanie w sesji (bez obiektów AR)
+	@@@ ruby
+	# http://www.ruby-forum.com/topic/173345
+	# http://ruby-doc.org/core/classes/Marshal.html
+	def marshal_dump
+	 self.serializable_attributes.inject({}) do |hash, attr|
+	  hash[attr] = send(attr)
+	  hash
+	 end
+	end
+
+	# http://www.ruby-forum.com/topic/173345
+	# http://ruby-doc.org/core/classes/Marshal.html
+	def marshal_load(hash)
+	 hash.each do |ivar, value|
+	  instance_variable_set(:"@#{ivar}", value)
+	 end
+	end
+
+!SLIDE
+ filtr per zakładka
+ Html 5
+
+
