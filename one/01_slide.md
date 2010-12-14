@@ -263,3 +263,167 @@ validations.rb
 	       @data[key]
 	     end
 	   end
+
+!SLIDE
+ errors.rb
+
+!SLIDE code smaller
+	# When passed a symbol or a name of a method, returns an array of errors
+	# for the method.
+	#
+	#   p.errors[:name]   # => ["can not be nil"]
+	#   p.errors['name']  # => ["can not be nil"]
+	def [](attribute)
+	end
+
+	# Adds to the supplied attribute the supplied error message.
+	#
+	#   p.errors[:name] = "must be set"
+	#   p.errors[:name] # => ['must be set']
+	def []=(attribute, error)
+	end
+
+	# Iterates through each error key, value pair in the error messages hash.
+	# Yields the attribute and the error for that attribute.  If the attribute
+	# has more than one error message, yields once for each error message.
+	#
+	#   p.errors.add(:name, "can't be blank")
+	#   p.errors.add(:name, "must be specified")
+	#   p.errors.each do |attribute, errors_array|
+	#     # Will yield :name and "can't be blank"
+	#     # then yield :name and "must be specified"
+	#   end
+	def each
+	end
+
+!SLIDE code smaller
+	def add_on_empty(attributes, options = {})
+	end
+
+	def add_on_blank(attributes, options = {})
+	end
+
+!SLIDE code smaller
+	# Translates an error message in its default scope
+	# (<tt>activemodel.errors.messages</tt>).
+	#
+	# Error messages are first looked up in <tt>models.MODEL.attributes.ATTRIBUTE.MESSAGE</tt>,
+	# if it's not there, it's looked up in <tt>models.MODEL.MESSAGE</tt> and if that is not
+	# there also, it returns the translation of the default message
+	# (e.g. <tt>activemodel.errors.messages.MESSAGE</tt>). The translated model name,
+	# translated attribute name and the value are available for interpolation.
+	#
+	# When using inheritance in your models, it will check all the inherited
+	# models too, but only if the model itself hasn't been found. Say you have
+	# <tt>class Admin < User; end</tt> and you wanted the translation for
+	# the <tt>:blank</tt> error +message+ for the <tt>title</tt> +attribute+,
+	# it looks for these translations:
+	#
+	# <ol>
+	# <li><tt>activemodel.errors.models.admin.attributes.title.blank</tt></li>
+	# <li><tt>activemodel.errors.models.admin.blank</tt></li>
+	# <li><tt>activemodel.errors.models.user.attributes.title.blank</tt></li>
+	# <li><tt>activemodel.errors.models.user.blank</tt></li>
+	# <li>any default you provided through the +options+ hash (in the activemodel.errors scope)</li>
+	# <li><tt>activemodel.errors.messages.blank</tt></li>
+	# <li><tt>errors.attributes.title.blank</tt></li>
+	# <li><tt>errors.messages.blank</tt></li>
+	# </ol>
+	def generate_message(attribute, type = :invalid, options = {})
+	end
+
+
+!SLIDE
+ naming.rb
+
+!SLIDE code smaller
+	@@@ ruby
+	class Name < String
+		attr_reader :singular, :plural, :element, :collection, :partial_path, :i18n_key
+		alias_method :cache_key, :collection
+
+		def initialize(klass)
+		  super(klass.name)
+		  @klass = klass
+		  @singular = ActiveSupport::Inflector.underscore(self).tr('/', '_').freeze
+		  @plural = ActiveSupport::Inflector.pluralize(@singular).freeze
+		  @element = ActiveSupport::Inflector.underscore(ActiveSupport::Inflector.demodulize(self)).freeze
+		  @human = ActiveSupport::Inflector.humanize(@element).freeze
+		  @collection = ActiveSupport::Inflector.tableize(self).freeze
+		  @partial_path = "#{@collection}/#{@element}".freeze
+		  @i18n_key = ActiveSupport::Inflector.underscore(self).tr('/', '.').to_sym
+		end
+
+		# Transform the model name into a more humane format, using I18n. By default,
+		# it will underscore then humanize the class name
+		#
+		#   BlogPost.model_name.human # => "Blog post"
+		#
+		# Specify +options+ with additional translating options.
+	    def human(options={})
+	     return @human unless @klass.respond_to?(:lookup_ancestors) &&
+		                       @klass.respond_to?(:i18n_scope)
+
+	     I18n.(...)
+	    end
+	end
+
+!SLIDE code smaller
+	@@@ ruby
+	# == Active Model Naming
+	#
+	# Creates a +model_name+ method on your object.
+	#
+	# To implement, just extend ActiveModel::Naming in your object:
+	#
+	#   class BookCover
+	#     extend ActiveModel::Naming
+	#   end
+	#
+	#   BookCover.model_name        # => "BookCover"
+	#   BookCover.model_name.human  # => "Book cover"
+	#
+	#   BookCover.model_name.i18n_key              # => "book_cover"
+	#   BookModule::BookCover.model_name.i18n_key  # => "book_module.book_cover"
+	#
+	# Providing the functionality that ActiveModel::Naming provides in your object
+	# is required to pass the Active Model Lint test.  So either extending the provided
+	# method below, or rolling your own is required..
+	module Naming
+		# Returns an ActiveModel::Name object for module. It can be
+		# used to retrieve all kinds of naming-related information.
+		def model_name
+		  @_model_name ||= ActiveModel::Name.new(self)
+		end
+	end
+
+!SLIDE code smaller
+	@@@ ruby
+	# conversion.rb
+	# Handles default conversions: to_model, to_key and to_param.
+	#
+	#   class ContactMessage
+	#     include ActiveModel::Conversion
+	#
+	#     # ContactMessage are never persisted in the DB
+	#     def persisted?
+	#       false
+	#     end
+	#   end
+	module Conversion
+		def to_model
+		  self
+		end
+
+		def to_key
+		  persisted? ? [id] : nil
+		end
+
+		def to_param
+		  persisted? ? to_key.join('-') : nil
+		end
+	end
+
+
+!SLIDE
+translation.rb
