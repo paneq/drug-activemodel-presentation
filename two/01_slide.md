@@ -145,9 +145,3 @@
 	  instance_variable_set(:"@#{ivar}", value)
 	 end
 	end
-
-!SLIDE
- filtr per zakładka
- Html 5
-
-
